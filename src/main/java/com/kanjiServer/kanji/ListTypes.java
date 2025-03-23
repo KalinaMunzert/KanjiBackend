@@ -1,6 +1,6 @@
 package com.kanjiServer.kanji;
 
-public enum KanjiListTypes {
+public enum ListTypes {
     JOYO("joyo"),
     JINMEIYO("jinmeiyo"),
     KYOIKU("kyoiku"),
@@ -13,7 +13,7 @@ public enum KanjiListTypes {
 
     private final String value;
 
-    KanjiListTypes(String value) {
+    ListTypes(String value) {
         this.value = value;
     }
 
