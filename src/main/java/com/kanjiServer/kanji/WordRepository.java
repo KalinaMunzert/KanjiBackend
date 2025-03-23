@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 public interface WordRepository extends MongoRepository<Word, String> {
-    Word findByDefinition(String definition);
+//    Word findByDefinition(String definition);
     Word findByWord(String word);
 //    Word findByFirstKanji(String firstKanji);
 //    Word findBySecondKanji(String secondKanji);
-    Word findByPronunciation(String pronunciation);
-    Word findByExampleSentence(String exampleSentence);
+//    Word findByPronunciation(String pronunciation);
+//    Word findBySentences(String exampleSentence);
 }

@@ -36,7 +36,8 @@ public class TimerController implements TimerListener {
     }
 
     @PostMapping("/word-created")
-    public void onWordCreated() {
+    public String onWordCreated(String word) {
         timerService.addTime(10000); // 10 sec
+        return word;
     }
 }
