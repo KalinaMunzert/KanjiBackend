@@ -18,8 +18,9 @@ public class TimerController implements TimerListener {
         this.timerService = timerService;
     }
 
-    @PostMapping("/start")
-    public void startTimer(@RequestParam int duration) {
+    @PostMapping("/start/{duration}")
+    public void startTimer(@PathVariable int duration) {
+        System.out.println("HELLO WORLD");
         timerService.startTimer(duration, this);
     }
 
