@@ -1,5 +1,6 @@
 package com.kanjiServer.controllers;
 
+import com.kanjiServer.kanji.Word;
 import com.kanjiServer.services.TimerService;
 import com.kanjiServer.timer.TimerListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,6 @@ public class TimerController implements TimerListener {
     @Override
     @GetMapping("/timer")
     public int onTimeUpdate() {
-        System.out.println("On Time Update: " + timerService.getTimeLeft());
         return timerService.getTimeLeft();
     }
 

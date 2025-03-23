@@ -1,5 +1,7 @@
 package com.kanjiServer.board;
 
+import com.kanjiServer.kanji.Word;
+
 public class Tile {
 
     private String kanji;
@@ -13,6 +15,9 @@ public class Tile {
     }
 
     public String getKanji() {
+        if (kanji == null) {
+            return " ";
+        }
         return kanji;
     }
 
