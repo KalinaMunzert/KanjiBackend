@@ -20,9 +20,11 @@ public class GameController {
     }
 
     @PostMapping("/move")
-    public void move(@RequestBody String moveRequest) {
+    public String move(@RequestBody String moveRequest) {
         System.out.println("Controller.move");
-        gameService.handleMove(moveRequest);
+        ArrayList<String> a = gameService.handleMove(moveRequest);
+        System.out.println("Backend: " + a.toString());
+        return a.toString();
     }
 
     @GetMapping("/board")

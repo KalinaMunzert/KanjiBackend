@@ -1,12 +1,7 @@
 package com.kanjiServer;
 
-import com.kanjiServer.kanji.ApiFetcher;
-import com.kanjiServer.kanji.ListTypes;
-import com.kanjiServer.kanji.Word;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.util.ArrayList;
 
 @SpringBootApplication
 public class KanjiServerApplication {

@@ -37,38 +37,45 @@ public class GameBoard {
     public GameBoard(WordChecker wordChecker, WordService wordService, TimerService timerService, TimerListener listener) {
         this.listener = listener;
         System.out.println("Board.constructor");
-        this.timerService = timerService;
+//        this.timerService = timerService;
         this.wordChecker = wordChecker;
         this.wordService = wordService;
     }
 
-    public void moveTiles(String directionJSON) {
+    public ArrayList<String> moveTiles(String directionJSON) {
         System.out.println("Board.moveTiles");
         System.out.println("DirectionJSON: " + directionJSON);
         String direction = JsonParser.parseString(directionJSON).getAsJsonObject().get("direction").getAsString();
         System.out.println("DirectionPARSED: " + direction);
+        ArrayList<String> words = new ArrayList<>();
         switch (direction) {
             case "up" -> {
                 for (int col = 0; col < 4; col++) {
-                    shiftColumnUp(col);
+                    words = shiftColumnUp(col);
                 }
+//                return words;
             }
             case "down" -> {
                 for (int col = 0; col < 4; col++) {
-                    shiftColumnDown(col);
+                    words = shiftColumnDown(col);
                 }
+//                return words;
             }
             case "left" -> {
                 for (int row = 0; row < 4; row++) {
-                    shiftRowLeft(row);
+                    words = shiftRowLeft(row);
                 }
+//                return words;
             }
             case "right" -> {
                 for (int row = 0; row < 4; row++) {
-                    shiftRowRight(row);
+                    words = shiftRowRight(row);
                 }
+//                return words;
             }
         }
+        System.out.println("Length (main): " + words.size());
+        return words;
 //        addRandomTile();
 //        System.out.println(printBoard());
 //        System.out.println(printEmpties());
@@ -78,9 +85,10 @@ public class GameBoard {
         System.out.println(Arrays.deepToString(emptyCells));
     }
 
-    private void shiftColumnUp(int col) {
+    private ArrayList<String> shiftColumnUp(int col) {
         boolean merged;
         int moveTo = 0;
+        ArrayList<String> words = new ArrayList<>();
         System.out.printf("----------SHIFT COLUMN UP: COL=%d----------\n", col);
         for (int row = 0; row < 4; row++) {
             merged = false;
@@ -105,6 +113,8 @@ public class GameBoard {
                     board[row + 1][col] = null;
 
                     updateEmptyCells();
+                    words.add(validWord);
+                    System.out.println("Length: " + words.size());
                     row++; // skip next tile because it already merged
                     merged = true;
                 } else {
@@ -119,11 +129,13 @@ public class GameBoard {
             }
             moveTo++;
         }
+        return words;
     }
 
-    private void shiftColumnDown(int col) {
+    private ArrayList<String> shiftColumnDown(int col) {
         boolean merged;
         int moveTo = 3;
+        ArrayList<String> words = new ArrayList<>();
         System.out.printf("----------SHIFT COLUMN DOWN: COL=%d----------\n", col);
         for (int row = 3; row > -1; row--) {
             merged = false;
@@ -146,6 +158,8 @@ public class GameBoard {
                     System.out.println("Valid Word: " + validWord);
                     board[row][col] = null;
                     board[row - 1][col] = null;
+
+                    words.add(validWord);
                     updateEmptyCells();
                     row--; // skip next tile because it already merged
                     merged = true;
@@ -161,11 +175,13 @@ public class GameBoard {
             }
             moveTo--;
         }
+        return words;
     }
 
-    private void shiftRowLeft(int row) {
+    private ArrayList<String> shiftRowLeft(int row) {
         boolean merged;
         int moveTo = 0;
+        ArrayList<String> words = new ArrayList<>();
         System.out.printf("----------SHIFT COLUMN LEFT: ROW=%d----------\n", row);
         for (int col = 0; col < 4; col++) {
             merged = false;
@@ -188,6 +204,8 @@ public class GameBoard {
                     System.out.println("Valid Word: " + validWord);
                     board[row][col] = null;
                     board[row][col + 1] = null;
+
+                    words.add(validWord);
                     updateEmptyCells();
                     col++; // skip next tile because it already merged
                     merged = true;
@@ -203,11 +221,13 @@ public class GameBoard {
             }
             moveTo++;
         }
+        return words;
     }
 
-    private void shiftRowRight(int row) {
+    private ArrayList<String> shiftRowRight(int row) {
         boolean merged;
         int moveTo = 3;
+        ArrayList<String> words = new ArrayList<>();
         System.out.printf("----------SHIFT COLUMN RIGHT: ROW=%d----------\n", row);
         for (int col = 3; col > -1; col--) {
             merged = false;
@@ -230,6 +250,8 @@ public class GameBoard {
                     System.out.println("Valid Word: " + validWord);
                     board[row][col] = null;
                     board[row][col - 1] = null;
+
+                    words.add(validWord);
                     updateEmptyCells();
                     col--; // skip next tile because it already merged
                     merged = true;
@@ -245,6 +267,7 @@ public class GameBoard {
             }
             moveTo--;
         }
+        return words;
     }
 
     public void printBoard() {

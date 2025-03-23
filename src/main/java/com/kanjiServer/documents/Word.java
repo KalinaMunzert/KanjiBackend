@@ -1,5 +1,6 @@
-package com.kanjiServer.kanji;
+package com.kanjiServer.documents;
 
+import com.kanjiServer.kanji.ApiFetcher;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 

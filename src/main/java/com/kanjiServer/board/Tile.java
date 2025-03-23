@@ -1,7 +1,5 @@
 package com.kanjiServer.board;
 
-import com.kanjiServer.kanji.Word;
-
 public class Tile {
 
     private String kanji;

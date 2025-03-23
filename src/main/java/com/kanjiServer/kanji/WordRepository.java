@@ -1,9 +1,7 @@
 package com.kanjiServer.kanji;
 
+import com.kanjiServer.documents.Word;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 public interface WordRepository extends MongoRepository<Word, String> {
 //    Word findByDefinition(String definition);

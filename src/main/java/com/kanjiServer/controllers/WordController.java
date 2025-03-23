@@ -1,10 +1,9 @@
 package com.kanjiServer.controllers;
 
-import com.kanjiServer.kanji.Word;
+import com.kanjiServer.documents.Word;
 import com.kanjiServer.services.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
 @Controller

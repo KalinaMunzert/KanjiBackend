@@ -1,6 +1,5 @@
 package com.kanjiServer.controllers;
 
-import com.kanjiServer.kanji.Word;
 import com.kanjiServer.services.TimerService;
 import com.kanjiServer.timer.TimerListener;
 import org.springframework.beans.factory.annotation.Autowired;

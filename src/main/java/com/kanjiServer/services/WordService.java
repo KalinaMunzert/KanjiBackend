@@ -1,6 +1,6 @@
 package com.kanjiServer.services;
 
-import com.kanjiServer.kanji.Word;
+import com.kanjiServer.documents.Word;
 import com.kanjiServer.kanji.WordRepository;
 import org.springframework.stereotype.Service;
 
