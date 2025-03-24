@@ -5,11 +5,13 @@ public class Tile {
     private String kanji;
     private int x;
     private int y;
+    private String color;
 
     public Tile(String kanji, int x, int y) {
         this.kanji = kanji;
         this.x = x;
         this.y = y;
+        setColor("white");
     }
 
     public String getKanji() {
@@ -28,6 +30,14 @@ public class Tile {
         return updates;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public int getX() {
         return x;
     }
@@ -43,6 +53,4 @@ public class Tile {
     public void setY(int y) {
         this.y = y;
     }
-
-
 }

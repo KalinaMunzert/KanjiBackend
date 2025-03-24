@@ -6,6 +6,7 @@ public class ScoreTile extends Tile {
     public ScoreTile(String kanji, int x, int y) {
         super(kanji, x, y);
         SCORE_MULTIPLIER = 2;
+        setColor("green");
     }
 
     @Override

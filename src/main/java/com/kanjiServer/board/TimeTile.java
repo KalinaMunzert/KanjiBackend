@@ -6,6 +6,7 @@ public class TimeTile extends Tile {
     public TimeTile(String kanji, int x, int y) {
         super(kanji, x, y);
         TIME_DEDUCTION = 30;
+        setColor("red");
     }
 
     @Override
@@ -16,4 +17,6 @@ public class TimeTile extends Tile {
         updates[1] = time - TIME_DEDUCTION;
         return updates;
     }
+
+
 }
