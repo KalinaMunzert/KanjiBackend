@@ -22,7 +22,6 @@ public class ApiFetcher {
 //
     static {
         allKanji.addAll(getKanjiList(ListTypes.JOYO));
-//        System.out.println("Grade 2 initialized");
     }
 
     public static ArrayList<String> getKanjiList(ListTypes listType) {

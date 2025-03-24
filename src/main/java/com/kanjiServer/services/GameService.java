@@ -53,4 +53,8 @@ public class GameService {
         board = new GameBoard(wordChecker, wordService, timerService, listener);
         board.initializeBoard();
     }
+
+    public int getScore() {
+        return board.getScore();
+    }
 }

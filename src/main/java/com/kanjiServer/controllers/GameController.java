@@ -38,4 +38,10 @@ public class GameController {
         System.out.println("Controller.startGame");
         gameService.createNewGame();
     }
+
+    @GetMapping("/score")
+    public int getScore() {
+        System.out.println("Controller.getScore");
+        return gameService.getScore();
+    }
 }
