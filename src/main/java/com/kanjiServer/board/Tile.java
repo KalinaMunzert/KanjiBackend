@@ -1,7 +1,5 @@
 package com.kanjiServer.board;
 
-import com.kanjiServer.kanji.Word;
-
 public class Tile {
 
     private String kanji;
@@ -15,14 +13,19 @@ public class Tile {
     }
 
     public String getKanji() {
-        if (kanji == null) {
-            return " ";
-        }
         return kanji;
     }
 
     public void setKanji(String kanji) {
         this.kanji = kanji;
+    }
+
+    public int[] wordMade(int score, int time) {
+        time /= 1000; // convert to seconds
+        int[] updates = new int[2];
+        updates[0] = score + time;
+        updates[1] = time;
+        return updates;
     }
 
     public int getX() {
@@ -40,4 +43,6 @@ public class Tile {
     public void setY(int y) {
         this.y = y;
     }
+
+
 }

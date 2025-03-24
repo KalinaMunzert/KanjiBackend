@@ -1,9 +1,7 @@
-package com.kanjiServer.kanji;
+package com.kanjiServer.documents;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.kanjiServer.kanji.ApiFetcher;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -18,26 +16,27 @@ public class Word {
 //    private String secondKanji;
     private String pronunciation;
     private String definition;
-    private ArrayList<String> exampleSentence;
+    private ArrayList<String> sentences;
 
     public Word(String word) {
         this.word = word;
-        String[] split = word.split("");
+//        String[] split = word.split("");
 //        firstKanji = split[0];
 //        secondKanji = split[1];
         ArrayList<String> detail = ApiFetcher.getDetails(word);
         pronunciation = detail.get(0);
         definition = detail.get(1);
-        exampleSentence = ApiFetcher.getExampleSentence(word);
+        sentences = ApiFetcher.getSentences(word);
     }
 
-    //    public Word(String firstKanji, String secondKanji, String pronunciation, String definition, String exampleSentence) {
+    public Word(String word, String pronunciation, String definition, ArrayList<String> sentences) {
 //        this.firstKanji = firstKanji;
 //        this.secondKanji = secondKanji;
-//        this.pronunciation = pronunciation;
-//        this.definition = definition;
-//        this.exampleSentence = exampleSentence;
-//    }
+        this.word = word;
+        this.pronunciation = pronunciation;
+        this.definition = definition;
+        this.sentences = sentences;
+    }
 
     public Word() {} // default constructor
 
@@ -61,7 +60,7 @@ public class Word {
         return definition;
     }
 
-    public ArrayList<String> getExampleSentence() {
-        return exampleSentence;
+    public ArrayList<String> getSentences() {
+        return sentences;
     }
 }

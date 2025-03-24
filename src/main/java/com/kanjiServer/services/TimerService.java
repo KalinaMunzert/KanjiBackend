@@ -1,11 +1,7 @@
 package com.kanjiServer.services;
 
-import com.kanjiServer.kanji.Word;
-import com.kanjiServer.kanji.WordRepository;
 import com.kanjiServer.timer.GameTimer;
 import com.kanjiServer.timer.TimerListener;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
