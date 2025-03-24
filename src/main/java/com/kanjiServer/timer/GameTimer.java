@@ -33,7 +33,6 @@ public class GameTimer {
         if (timeLeft > 0) {
             timeLeft -= 1000;
             listener.onTimeUpdate();
-//            System.out.println("Time Left in tick: " + timeLeft);
         } else {
             stop();
             listener.onTimeUp();

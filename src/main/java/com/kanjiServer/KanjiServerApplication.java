@@ -1,5 +1,6 @@
 package com.kanjiServer;
 
+import com.kanjiServer.documents.Word;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -11,12 +12,12 @@ public class KanjiServerApplication {
 
 //		System.out.println("\n\n\n");
 //
-//		Word word = new Word("今月");
-//		System.out.println("Word: " + word.getWord());
-//		System.out.println("Pronunciation: " + word.getPronunciation());
-//		System.out.println("Definition: " + word.getDefinition());
-//		System.out.println("Sentence (Japanese): " + word.getExampleSentence().get(0));
-//		System.out.println("Sentence (English): " + word.getExampleSentence().get(1));
+		Word word = new Word("今月");
+		System.out.println("Word: " + word.getWord());
+		System.out.println("Pronunciation: " + word.getPronunciation());
+		System.out.println("Definition: " + word.getDefinition());
+		System.out.println("Sentence (Japanese): " + word.getSentences().get(0));
+		System.out.println("Sentence (English): " + word.getSentences().get(1));
 //
 //		System.out.println("\n\n\n");
 //		WordService.save("同調");

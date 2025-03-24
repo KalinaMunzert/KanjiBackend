@@ -1,7 +1,6 @@
 package com.kanjiServer.board;
 
 public class Tile {
-
     private String kanji;
     private int x;
     private int y;
@@ -14,20 +13,20 @@ public class Tile {
         setColor("white");
     }
 
-    public String getKanji() {
-        return kanji;
-    }
-
-    public void setKanji(String kanji) {
-        this.kanji = kanji;
-    }
-
     public int[] wordMade(int score, int time) {
         time /= 1000; // convert to seconds
         int[] updates = new int[2];
         updates[0] = score + time;
         updates[1] = time;
         return updates;
+    }
+
+    public String getKanji() {
+        return kanji;
+    }
+
+    public void setKanji(String kanji) {
+        this.kanji = kanji;
     }
 
     public String getColor() {

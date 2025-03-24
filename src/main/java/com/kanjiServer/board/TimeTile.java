@@ -17,6 +17,4 @@ public class TimeTile extends Tile {
         updates[1] = time - TIME_DEDUCTION;
         return updates;
     }
-
-
 }
