@@ -1,7 +1,7 @@
 package com.kanjiServer.controllers;
 
-import com.kanjiServer.board.GameBoard;
 import com.kanjiServer.board.Tile;
+import com.kanjiServer.documents.Word;
 import com.kanjiServer.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +20,8 @@ public class GameController {
     }
 
     @PostMapping("/move")
-    public String move(@RequestBody String moveRequest) {
-        System.out.println("Controller.move");
-        ArrayList<String> a = gameService.handleMove(moveRequest);
-        System.out.println("Backend: " + a.toString());
-        return a.toString();
+    public ArrayList<Word> move(@RequestBody String moveRequest) {
+        return gameService.handleMove(moveRequest);
     }
 
     @GetMapping("/board")

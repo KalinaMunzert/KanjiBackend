@@ -1,9 +1,7 @@
 package com.kanjiServer.board;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.google.gson.JsonParser;
+import com.kanjiServer.documents.Word;
 import com.kanjiServer.kanji.ApiFetcher;
 import com.kanjiServer.kanji.ListTypes;
 import com.kanjiServer.kanji.WordChecker;
@@ -16,11 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
-@JsonIgnoreProperties({"emptyCells", "nextTiles", "wordChecker", "random"})
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class GameBoard {
-
-    // everything that has implementation works, except the little bug in the board initializer
 
     private Tile[][] board;
     private int score;
@@ -31,10 +25,11 @@ public class GameBoard {
     private final WordService wordService;
     private final TimerService timerService;
     private final TimerListener listener;
-    private Random random = new Random();
+    private final Random random = new Random();
+    private int[] scoreTileCoords;
+    private  int[] timeTileCoords;
 
     public GameBoard(WordChecker wordChecker, WordService wordService, TimerService timerService, TimerListener listener) {
-        System.out.println("Board.constructor");
         this.listener = listener;
         this.timerService = timerService;
         this.wordChecker = wordChecker;
@@ -42,241 +37,192 @@ public class GameBoard {
         score = 0;
     }
 
-    public ArrayList<String> moveTiles(String directionJSON) {
-        System.out.println("Board.moveTiles");
-        System.out.println("DirectionJSON: " + directionJSON);
+    public ArrayList<Word> moveTiles(String directionJSON) {
         String direction = JsonParser.parseString(directionJSON).getAsJsonObject().get("direction").getAsString();
-        System.out.println("DirectionPARSED: " + direction);
-        ArrayList<String> words = new ArrayList<>();
+        ArrayList<Word> words = new ArrayList<>();
         switch (direction) {
             case "up" -> {
                 for (int col = 0; col < 4; col++) {
-                    words = shiftColumnUp(col);
+                    words.addAll(shiftColumnUp(col));
                 }
             }
             case "down" -> {
                 for (int col = 0; col < 4; col++) {
-                    words = shiftColumnDown(col);
+                    words.addAll(shiftColumnDown(col));
                 }
             }
             case "left" -> {
                 for (int row = 0; row < 4; row++) {
-                    words = shiftRowLeft(row);
+                    words.addAll(shiftRowLeft(row));
                 }
             }
             case "right" -> {
                 for (int row = 0; row < 4; row++) {
-                    words = shiftRowRight(row);
+                    words.addAll(shiftRowRight(row));
                 }
             }
         }
-        System.out.println("Length (main): " + words.size());
-        System.out.println("Score: " + score);
         return words;
     }
 
-    public void printEmpties() {
-        System.out.println(Arrays.deepToString(emptyCells));
-    }
-
-    private ArrayList<String> shiftColumnUp(int col) {
+    private ArrayList<Word> shiftColumnUp(int col) {
         boolean merged;
         int moveTo = 0;
-        ArrayList<String> words = new ArrayList<>();
-        System.out.printf("----------SHIFT COLUMN UP: COL=%d----------\n", col);
+        ArrayList<Word> words = new ArrayList<>();
         for (int row = 0; row < 4; row++) {
             merged = false;
             Tile tile = board[row][col];
             if (tile.getKanji().isEmpty()) {
-                System.out.printf("(%d, %d) is null\n", row, col);
                 continue;
             }
             String firstKanji = tile.getKanji();
-            System.out.printf("(%d, %d) has %s (first)\n", row, col, firstKanji);
             if (row < 3) {
                 Tile second = board[row + 1][col];
                 String secondKanji = second.getKanji();
-                System.out.printf("(%d, %d) has %s (second)\n", row, col, secondKanji);
                 String word1 = firstKanji + secondKanji;
-                System.out.println("Word1: " + word1);
                 String word2 = secondKanji + firstKanji;
-                System.out.println("Word2: " + word2);
                 if (wordChecker.isValidWord(word1) || wordChecker.isValidWord(word2)) {
                     String validWord = wordChecker.isValidWord(word1) ? word1 : word2;
                     wordCreated(validWord);
-                    System.out.println("Valid Word: " + validWord);
-                    tile.setKanji("");;
+                    tile.setKanji("");
                     second.setKanji("");
 
                     updateEmptyCells();
-                    words.add(validWord);
+                    words.add(wordService.getByWord(validWord));
                     int time = timerService.getTimeLeft();
                     int[] info = tile.wordMade(score, time);
                     score = info[0];
-                    timerService.addTime(info[1] - time);
-
-                    System.out.println("Length: " + words.size());
+                    int addedTime = info[1] - time;
+                    timerService.addTime(addedTime);
                     row++; // skip next tile because it already merged
                     merged = true;
-                } else {
-                    System.out.println("Not valid word");
                 }
             }
             if (row != moveTo && !merged) { // if tile can move and row has not changed
-                System.out.println("Translating Tile");
                 translateTile(row, col, moveTo, firstKanji, true);
-            } else {
-                System.out.println("Tile can't move");
             }
             moveTo++;
         }
         return words;
     }
 
-    private ArrayList<String> shiftColumnDown(int col) {
+    private ArrayList<Word> shiftColumnDown(int col) {
         boolean merged;
         int moveTo = 3;
-        ArrayList<String> words = new ArrayList<>();
-        System.out.printf("----------SHIFT COLUMN DOWN: COL=%d----------\n", col);
+        ArrayList<Word> words = new ArrayList<>();
         for (int row = 3; row > -1; row--) {
             merged = false;
             Tile tile = board[row][col];
             if (tile.getKanji().isEmpty()) {
-                System.out.printf("(%d, %d) is null\n", row, col);
                 continue;
             }
             String firstKanji = tile.getKanji();
-            System.out.printf("(%d, %d) has %s (first)\n", row, col, firstKanji);
             if (row > 1) {
                 Tile secondTile = board[row - 1][col];
                 String secondKanji = secondTile.getKanji();
-                System.out.printf("(%d, %d) has %s (second)\n", row, col, secondKanji);
                 String word1 = firstKanji + secondKanji;
-                System.out.println("Word1: " + word1);
                 String word2 = secondKanji + firstKanji;
-                System.out.println("Word2: " + word2);
                 if (wordChecker.isValidWord(word1) || wordChecker.isValidWord(word2)) {
                     String validWord = wordChecker.isValidWord(word1) ? word1 : word2;
                     wordCreated(validWord);
-                    System.out.println("Valid Word: " + validWord);
                     tile.setKanji("");
                     secondTile.setKanji("");
 
-                    words.add(validWord);
+                    words.add(wordService.getByWord(validWord));
                     int time = timerService.getTimeLeft();
                     int[] info = tile.wordMade(score, time);
                     score = info[0];
+                    int addedTime = info[1] - time;
+                    timerService.addTime(addedTime);
                     updateEmptyCells();
                     row--; // skip next tile because it already merged
                     merged = true;
-                } else {
-                    System.out.println("Not valid word");
                 }
             }
             if (row != moveTo && !merged) { // if tile can move and row has not changed
-                System.out.println("Translating tile");
                 translateTile(row, col, moveTo, firstKanji, true);
-            } else {
-                System.out.println("Tile can't move");
             }
             moveTo--;
         }
         return words;
     }
 
-    private ArrayList<String> shiftRowLeft(int row) {
+    private ArrayList<Word> shiftRowLeft(int row) {
         boolean merged;
         int moveTo = 0;
-        ArrayList<String> words = new ArrayList<>();
-        System.out.printf("----------SHIFT COLUMN LEFT: ROW=%d----------\n", row);
+        ArrayList<Word> words = new ArrayList<>();
         for (int col = 0; col < 4; col++) {
             merged = false;
             Tile tile = board[row][col];
             if (tile.getKanji().isEmpty()) {
-                System.out.printf("(%d, %d) is null\n", row, col);
                 continue;
             }
             String firstKanji = tile.getKanji();
-            System.out.printf("(%d, %d) has %s (first)\n", row, col, firstKanji);
             if (col < 3) {
-                Tile secondTile = board[row - 1][col];
+                Tile secondTile = board[row][col + 1];
                 String Kanji = secondTile.getKanji();
-                System.out.printf("(%d, %d) has %s (second)\n", row, col, Kanji);
                 String word1 = firstKanji + Kanji;
-                System.out.println("Word1: " + word1);
                 String word2 = Kanji + firstKanji;
-                System.out.println("Word2: " + word2);
                 if (wordChecker.isValidWord(word1) || wordChecker.isValidWord(word2)) {
                     String validWord = wordChecker.isValidWord(word1) ? word1 : word2;
                     wordCreated(validWord);
-                    System.out.println("Valid Word: " + validWord);
                     tile.setKanji("");
                     secondTile.setKanji("");
 
-                    words.add(validWord);
+                    words.add(wordService.getByWord(validWord));
                     int time = timerService.getTimeLeft();
                     int[] info = tile.wordMade(score, time);
-                    score = info[0];                    updateEmptyCells();
-                    col++; // skip next tile because it already merged
+                    score = info[0];
+                    int addedTime = info[1] - time;
+                    timerService.addTime(addedTime);
+
+                    updateEmptyCells();
+                    col++;
                     merged = true;
-                } else {
-                    System.out.println("Not valid word");
                 }
             }
-            if (col != moveTo && !merged) { // if tile can move and row has not changed
-                System.out.println("Translating Tile");
+            if (col != moveTo && !merged) {
                 translateTile(row, col, moveTo, firstKanji, false);
-            } else {
-                System.out.println("Tile can't move");
             }
             moveTo++;
         }
         return words;
     }
 
-    private ArrayList<String> shiftRowRight(int row) {
+    private ArrayList<Word> shiftRowRight(int row) {
         boolean merged;
         int moveTo = 3;
-        ArrayList<String> words = new ArrayList<>();
-        System.out.printf("----------SHIFT COLUMN RIGHT: ROW=%d----------\n", row);
+        ArrayList<Word> words = new ArrayList<>();
         for (int col = 3; col > -1; col--) {
             merged = false;
             Tile tile = board[row][col];
             if (tile.getKanji().isEmpty()) {
-                System.out.printf("(%d, %d) is null\n", row, col);
                 continue;
             }
             String firstKanji = tile.getKanji();
-            System.out.printf("(%d, %d) has %s (first)\n", row, col, firstKanji);
             if (col > 1) {
                 String second = board[row][col - 1].getKanji();
-                System.out.printf("(%d, %d) has %s (second)\n", row, col, second);
                 String word1 = firstKanji + second;
-                System.out.println("Word1: " + word1);
                 String word2 = second + firstKanji;
-                System.out.println("Word2: " + word2);
                 if (wordChecker.isValidWord(word1) || wordChecker.isValidWord(word2)) {
                     String validWord = wordChecker.isValidWord(word1) ? word1 : word2;
                     wordCreated(validWord);
-                    System.out.println("Valid Word: " + validWord);
                     tile.setKanji("");
                     board[row][col - 1].setKanji("");
 
-                    words.add(validWord);
+                    words.add(wordService.getByWord(validWord));
                     int time = timerService.getTimeLeft();
                     int[] info = tile.wordMade(score, time);
-                    score = info[0];                    updateEmptyCells();
-                    col--; // skip next tile because it already merged
+                    score = info[0];
+                    int addedTime = info[1] - time;
+                    timerService.addTime(addedTime);
+                    updateEmptyCells();
+                    col--;
                     merged = true;
-                } else {
-                    System.out.println("Not valid word");
                 }
             }
-            if (col != moveTo && !merged) { // if tile can move and row has not changed
-                System.out.println("Translating tile");
+            if (col != moveTo && !merged) {
                 translateTile(row, col, moveTo, firstKanji, false);
-            } else {
-                System.out.println("Tile can't move");
             }
             moveTo--;
         }
@@ -284,7 +230,6 @@ public class GameBoard {
     }
 
     public void printBoard() {
-        System.out.println("Board.print");
         StringBuilder string = new StringBuilder();
         for (int i = 0; i < 4; i++){
             string.append(String.format("%s | %s | %s | %s", board[i][0].getKanji(), board[i][1].getKanji(), board[i][2].getKanji(), board[i][3].getKanji()));
@@ -294,21 +239,30 @@ public class GameBoard {
     }
 
     private void translateTile(int row, int col, int moveTo, String first, boolean isVert) {
-        System.out.printf("(%d, %d) can move to %d\n", row, col, moveTo);
         board[row][col].setKanji("");
-        System.out.printf("(%d, %d) made null\n", row, col);
         if (isVert) {
-            board[moveTo][col] = new Tile(first, moveTo, col);
-            System.out.printf("New tile with %s at (%d, %d)\n", first, moveTo, col);
+            int[] newCoords = new int[] {moveTo, col};
+            if (Arrays.equals(newCoords, scoreTileCoords)) {
+                board[moveTo][col] = new ScoreTile(first, moveTo, col);
+            } else if (Arrays.equals(newCoords, timeTileCoords)) {
+                board[moveTo][col] = new TimeTile(first, moveTo, col);
+            } else {
+                board[moveTo][col] = new Tile(first, moveTo, col);
+            }
         } else {
-            board[row][moveTo] = new Tile(first, row, moveTo);
-            System.out.printf("New tile with %s at (%d, %d)\n", first, row, moveTo);
+            int [] newCoords = new int[] {row, moveTo};
+            if (Arrays.equals(newCoords, scoreTileCoords)) {
+                board[row][moveTo] = new ScoreTile(first, row, moveTo);
+            } else if (Arrays.equals(newCoords, timeTileCoords)) {
+                board[row][moveTo] = new TimeTile(first, row, moveTo);
+            } else {
+                board[row][moveTo] = new Tile(first, row, moveTo);
+            }
         }
         updateEmptyCells();
     }
 
     public void wordCreated(String word){
-        System.out.println("Board.wordCreated");
         recentWords.add(word);
         addNextKanji();
         listener.onWordCreated(word);
@@ -321,7 +275,7 @@ public class GameBoard {
     }
 
     public Tile[][] getBoard() {
-        System.out.println("Board.getBoard");
+        printBoard();
         return board;
     }
 
@@ -331,12 +285,7 @@ public class GameBoard {
         emptyCells = new boolean[4][4];
         nextTiles = new ArrayList<>();
         initializeEmptyCells();
-//        initializeBoard();
-        System.out.println("Board.initialize");
-//        System.out.println("Initializing Board...");
-//        initializeEmptyCells();
 
-        // initializes board with all null Tiles
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 board[i][j] = new Tile("", i, j);
@@ -346,19 +295,19 @@ public class GameBoard {
         int i = random.nextInt(4);
         int j = random.nextInt(4);
         board[i][j] = new ScoreTile("", i, j);
+        scoreTileCoords = new int[] {i, j};
         i = random.nextInt(4);
         j = random.nextInt(4);
         board[i][j] = new TimeTile("", i, j);
+        timeTileCoords = new int[] {i, j};
 
         ArrayList<String> pair = getKanjiPair();
 
         System.out.println("-----------");
         addRandomTile(pair.get(0));
         System.out.println("First Kanji: " + pair.get(0));
-//        System.out.printf("First Cords: (%d, %d)\n", firstTile.getX(), firstTile.getY());
         addRandomTile(pair.get(1));
         System.out.println("Second Kanji: " + pair.get(1));
-//        System.out.printf("Second Cords: (%d, %d)\n", secondTile.getX(), secondTile.getY());
         System.out.println("-----------");
 
         pair = getKanjiPair();
@@ -371,23 +320,20 @@ public class GameBoard {
     }
 
     private ArrayList<String> getKanjiPair() {
-        System.out.println("Board.getPair");
         ArrayList<String> pair = new ArrayList<>();
 
         String firstKanji = ApiFetcher.getRandomKanji(ListTypes.GRADE_2);
         ArrayList<String> wordList = ApiFetcher.searchWordsByKanji(firstKanji);
-        // Rerolls firstKanji if no words start with that character
-        while (wordList.isEmpty()) {
-            System.out.println("Original Kanji: " + firstKanji + " Rerolling List");
+        if (wordList.isEmpty()) {
+            System.out.println("Original Kanji: " + firstKanji + " Re rolling List");
             return getKanjiPair();
-//            System.out.println("Rerolled list");
         }
         String word = wordList.get(random.nextInt(wordList.size()));
 
         ArrayList<String> sentences = ApiFetcher.getSentences(word);
         if (sentences.isEmpty()) {
             System.out.println("No sentences: " + word);
-            return getKanjiPair(); // gets new pair
+            return getKanjiPair();
         }
         ArrayList<String> details = ApiFetcher.getDetails(word);
         String pronunciation = details.get(0);
@@ -405,7 +351,6 @@ public class GameBoard {
     }
 
     private void addRandomTile(String kanji) {
-        System.out.println("Board.addTile (kanji)");
         int i = random.nextInt(4);
         int j = random.nextInt(4);
         Tile tile = board[i][j];
@@ -414,9 +359,7 @@ public class GameBoard {
     }
 
     public void addRandomTile() {
-        System.out.println("Board.addTile (no kanji)");
         int index;
-        System.out.println("Next Tiles: " + nextTiles.toString());
         if (nextTiles.size() < 3) {
             index = nextTiles.size() - 1;
             addNextKanji();
@@ -432,7 +375,6 @@ public class GameBoard {
                 j = random.nextInt(4);
             }
             String next = nextTiles.get(index);
-            System.out.println("Next tile: " + next);
             Tile tile = board[i][j];
             tile.setKanji(next);
             nextTiles.remove(index);
@@ -442,7 +384,6 @@ public class GameBoard {
     }
 
     private void initializeEmptyCells() {
-        System.out.println("Board.initializeEmpties");
         for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
                 emptyCells[i][j] = true;

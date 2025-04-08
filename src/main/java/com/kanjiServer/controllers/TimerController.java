@@ -19,17 +19,15 @@ public class TimerController implements TimerListener {
 
     @PostMapping("/start/{duration}")
     public void startTimer(@PathVariable int duration) {
-        System.out.println("HELLO WORLD");
+        System.out.println("Timer.start");
         timerService.startTimer(duration, this);
     }
 
-    @Override
     @GetMapping("/game-over")
     public boolean onTimeUp() {
         return true;
     }
 
-    @Override
     @GetMapping("/timer")
     public int onTimeUpdate() {
         return timerService.getTimeLeft();
@@ -37,7 +35,8 @@ public class TimerController implements TimerListener {
 
     @PostMapping("/word-created")
     public String onWordCreated(String word) {
-        timerService.addTime(10000); // 10 sec
+        System.out.println("Timer.wordCreated");
+        timerService.addTime(10);
         return word;
     }
 }

@@ -8,7 +8,7 @@ public class GameTimer {
     private int timeLeft;
     private boolean isRunning;
     private ScheduledExecutorService scheduler;
-    private TimerListener listener;
+    private final TimerListener listener;
 
     public GameTimer(int duration, TimerListener listener) {
         this.timeLeft = duration;
@@ -22,7 +22,6 @@ public class GameTimer {
             scheduler = Executors.newSingleThreadScheduledExecutor();
         }
         scheduler.scheduleWithFixedDelay(() -> {
-//            System.out.println("In scheduler");
             if (isRunning) {
                 tick();
             }
@@ -31,7 +30,7 @@ public class GameTimer {
 
     public void tick() {
         if (timeLeft > 0) {
-            timeLeft -= 1000;
+            timeLeft -= 1;
             listener.onTimeUpdate();
         } else {
             stop();
@@ -40,6 +39,7 @@ public class GameTimer {
     }
 
     public void addTime(int addTime) {
+        System.out.println("GameTimer.addTime");
         timeLeft += addTime;
         listener.onTimeUpdate();
     }
@@ -51,10 +51,6 @@ public class GameTimer {
 
     public int getTimeLeft() {
         return timeLeft;
-    }
-
-    public boolean getRunning() {
-        return isRunning;
     }
 }
 
