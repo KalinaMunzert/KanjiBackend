@@ -11,10 +11,11 @@ public class ScoreTile extends Tile {
 
     @Override
     public int[] wordMade(int score, int time) {
-        time /= 1000; // convert to seconds
+        System.out.printf("ScoreTile: Initial = S:%d, T:%d\n", score, time);
         int[] updates = new int[2];
         updates[0] = score + (time * SCORE_MULTIPLIER);
-        updates[1] = time;
+        updates[1] = time + 10;
+        System.out.printf("ScoreTile: Final = S:%d, T:%d\n", updates[0], updates[1]);
         return updates;
     }
 }
