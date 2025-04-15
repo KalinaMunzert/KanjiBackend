@@ -30,12 +30,15 @@ public class Tile {
         this.kanji = kanji;
     }
 
-    public String getColor() {
-        return color;
-    }
-
     public void setColor(String color) {
         this.color = color;
+    }
+
+
+    // These are not used, but React expects them to be there
+
+    public String getColor() {
+        return color;
     }
 
     public int getX() {

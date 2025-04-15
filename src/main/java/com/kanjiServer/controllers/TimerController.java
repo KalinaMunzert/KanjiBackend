@@ -23,20 +23,8 @@ public class TimerController implements TimerListener {
         timerService.startTimer(duration, this);
     }
 
-    @GetMapping("/game-over")
-    public boolean onTimeUp() {
-        return true;
-    }
-
     @GetMapping("/timer")
     public int onTimeUpdate() {
         return timerService.getTimeLeft();
-    }
-
-    @PostMapping("/word-created")
-    public String onWordCreated(String word) {
-        System.out.println("Timer.wordCreated");
-        timerService.addTime(10);
-        return word;
     }
 }

@@ -34,12 +34,10 @@ public class GameTimer {
             listener.onTimeUpdate();
         } else {
             stop();
-            listener.onTimeUp();
         }
     }
 
     public void addTime(int addTime) {
-        System.out.println("GameTimer.addTime");
         timeLeft += addTime;
         listener.onTimeUpdate();
     }
